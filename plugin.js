@@ -130,6 +130,7 @@ let xxx = function(cm, keymap) {
 	keymap = systemKeymap(keymap);
 	cm.__emmetKeymap = keymap;
 	cm.addKeyMap(keymap);
+  debugger
 	return cm;
 }
 
