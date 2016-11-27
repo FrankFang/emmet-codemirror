@@ -1,5 +1,5 @@
-import emmet from 'emmet';
-import 'emmet/bundles/snippets';
-import 'emmet/bundles/caniuse';
+let emmet  = require('emmet');
+require('emmet/bundles/snippets')
+require('emmet/bundles/caniuse')
 
-export default emmet;
+module.exports = emmet;

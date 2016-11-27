@@ -4,9 +4,9 @@
  * should run acttion multiple times and update `selectionIndex`
  * property on each iteration.
  */
-import emmet from './emmet';
+let emmet = require('./emmet');
 
-export var modeMap = {
+var modeMap = {
 	'text/html': 'html',
 	'application/xml': 'xml',
 	'text/xsl': 'xsl',
@@ -16,7 +16,7 @@ export var modeMap = {
 	'text/x-sass': 'sass'
 };
 
-export default class EmmetEditor {
+module.exports = class EmmetEditor {
 	constructor(ctx, selIndex=0) {
 		this.context = ctx;
 		this.selectionIndex = selIndex || 0;

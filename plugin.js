@@ -1,10 +1,89 @@
+function noop() {
+	if (CodeMirror.version >= '3.1') {
+		return CodeMirror.Pass;
+	}
+	
+	throw CodeMirror.Pass;
+}
+
+/**
+ * Emmet action decorator: creates a command function
+ * for CodeMirror and executes Emmet action as single
+ * undo command
+ * @param  {String} name Action name
+ * @return {Function}
+ */
+function actionDecorator(name) {
+	return function(cm) {
+		let result;
+		cm.operation(() => result = runAction(name, new EmmetEditor(cm)));
+		return result;
+	};
+}
+
+/**
+ * Same as `actionDecorator()` but executes action
+ * with multiple selections
+ * @param  {String} name Action name
+ * @return {Function}
+ */
+function multiSelectionActionDecorator(name) {
+	return function(cm) {
+		let editor = new EmmetEditor(cm);
+		let selections = editor.selectionList();
+		let result = null;
+		cm.operation(function() {
+			for (let i = 0, il = selections.length; i < il; i++) {
+				editor.selectionIndex = i;
+				result = runAction(name, editor);
+				if (result === CodeMirror.Pass) {
+					break;
+				}
+			}
+		});
+		return result;
+	};
+}
+
+/**
+ * Runs Emmet action
+ * @param  {String}      name Action name
+ * @param  {EmmetEditor} editor EmmetEditor instance
+ * @return {Boolean}    Returns `true` if action is performed
+ * successfully
+ */
+function runAction(name, editor) {
+	if (name == 'expand_abbreviation_with_tab' && (editor.context.somethingSelected() || !editor.isValidSyntax())) {
+		// pass through Tab key handler if there's a selection
+		return noop();
+	}
+	
+	let result = false;
+	try {
+		result = emmet.run(name, editor);
+		if (!result && name == 'insert_formatted_line_break_only') {
+			return noop();
+		}
+	} catch (e) {
+		console.error(e);
+	}
+
+	return result;
+}
+
+let systemKeymap = function(keymap) {
+	let mac = /Mac/.test(navigator.platform);
+	let out = {};
+	Object.keys(keymap).forEach(key => out[!mac ? key.replace('Cmd', 'Ctrl') : key] = keymap[key]);
+	return out;
+}
 /**
  * Emmet plugin for CodeMirror
  */
-import EmmetEditor from './editor';
-import emmet from './emmet';
+let EmmetEditor = require('./editor')
+let emmet = require ('./emmet')
 
-var defaultKeymap = {
+let defaultKeymap = {
 	'Cmd-E': 'emmet.expand_abbreviation',
 	'Tab': 'emmet.expand_abbreviation_with_tab',
 	'Cmd-D': 'emmet.balance_outward',
@@ -35,7 +114,7 @@ var defaultKeymap = {
 };
 
 // actions that should be performed in single selection mode
-var singleSelectionActions = [
+let singleSelectionActions = [
 	'prev_edit_point', 'next_edit_point', 'merge_lines',
 	'reflect_css_value', 'select_next_item', 'select_previous_item',
 	'wrap_with_abbreviation', 'update_tag', 'insert_formatted_line_break_only'
@@ -46,29 +125,32 @@ var singleSelectionActions = [
  * @param  {CodeMirror} cm
  * @param  {Object} keymap
  */
-export default function main(cm, keymap=defaultKeymap) {
+let xxx = function(cm, keymap) {
+  keymap = keymap || defaultKeymap
 	keymap = systemKeymap(keymap);
 	cm.__emmetKeymap = keymap;
 	cm.addKeyMap(keymap);
 	return cm;
 }
 
-main.dispose = function(cm) {
+module.exports = xxx
+
+xxx.dispose = function(cm) {
 	if (cm.__emmetKeymap) {
 		cm.removeKeyMap(cm.__emmetKeymap);
 		delete cm.__emmetKeymap;
 	}
 };
 
-main.defaultKeymap = defaultKeymap;
-main.systemKeymap = systemKeymap;
-main.emmet = emmet;
-main.EmmetEditor = EmmetEditor;
-main.setup = function(CodeMirror) {
+xxx.defaultKeymap = defaultKeymap;
+xxx.systemKeymap = systemKeymap;
+xxx.emmet = emmet;
+xxx.EmmetEditor = EmmetEditor;
+xxx.setup = function(CodeMirror) {
 	// setup default Emmet actions
 	emmet.actions.getList().forEach(obj => {
-		var action = obj.name;
-		var command = 'emmet.' + action;
+		let action = obj.name;
+		let command = 'emmet.' + action;
 
 		if (!CodeMirror.commands[command]) {
 			CodeMirror.commands[command] = ~singleSelectionActions.indexOf(action)
@@ -87,85 +169,6 @@ main.setup = function(CodeMirror) {
 };
 
 if (typeof CodeMirror !== 'undefined') {
-	main.setup(CodeMirror);
+	xxx.setup(CodeMirror);
 }
 
-function noop() {
-	if (CodeMirror.version >= '3.1') {
-		return CodeMirror.Pass;
-	}
-	
-	throw CodeMirror.Pass;
-}
-
-/**
- * Emmet action decorator: creates a command function
- * for CodeMirror and executes Emmet action as single
- * undo command
- * @param  {String} name Action name
- * @return {Function}
- */
-function actionDecorator(name) {
-	return function(cm) {
-		var result;
-		cm.operation(() => result = runAction(name, new EmmetEditor(cm)));
-		return result;
-	};
-}
-
-/**
- * Same as `actionDecorator()` but executes action
- * with multiple selections
- * @param  {String} name Action name
- * @return {Function}
- */
-function multiSelectionActionDecorator(name) {
-	return function(cm) {
-		var editor = new EmmetEditor(cm);
-		var selections = editor.selectionList();
-		var result = null;
-		cm.operation(function() {
-			for (var i = 0, il = selections.length; i < il; i++) {
-				editor.selectionIndex = i;
-				result = runAction(name, editor);
-				if (result === CodeMirror.Pass) {
-					break;
-				}
-			}
-		});
-		return result;
-	};
-}
-
-/**
- * Runs Emmet action
- * @param  {String}      name Action name
- * @param  {EmmetEditor} editor EmmetEditor instance
- * @return {Boolean}    Returns `true` if action is performed
- * successfully
- */
-function runAction(name, editor) {
-	if (name == 'expand_abbreviation_with_tab' && (editor.context.somethingSelected() || !editor.isValidSyntax())) {
-		// pass through Tab key handler if there's a selection
-		return noop();
-	}
-	
-	var result = false;
-	try {
-		result = emmet.run(name, editor);
-		if (!result && name == 'insert_formatted_line_break_only') {
-			return noop();
-		}
-	} catch (e) {
-		console.error(e);
-	}
-
-	return result;
-}
-
-function systemKeymap(keymap) {
-	var mac = /Mac/.test(navigator.platform);
-	var out = {};
-	Object.keys(keymap).forEach(key => out[!mac ? key.replace('Cmd', 'Ctrl') : key] = keymap[key]);
-	return out;
-}

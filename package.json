@@ -2,7 +2,7 @@
   "name": "emmet-codemirror",
   "version": "1.2.5",
   "description": "Emmet plugin for CodeMirror",
-  "main": "./dist/emmet.js",
+  "main": "./plugin.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "prepublish": "./node_modules/.bin/gulp"
@@ -31,7 +31,6 @@
   "devDependencies": {
     "codemirror": "^5.0.0",
     "gulp": "^3.8.11",
-    "gulp-rename": "^1.2.0",
-    "js-bundler": "git+https://github.com/sergeche/js-bundler.git#v1.0.1"
+    "gulp-rename": "^1.2.0"
   }
 }
