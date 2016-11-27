@@ -144,11 +144,11 @@ main.dispose = function(cm) {
 	}
 };
 
-xxx.defaultKeymap = defaultKeymap;
-xxx.systemKeymap = systemKeymap;
-xxx.emmet = emmet;
-xxx.EmmetEditor = EmmetEditor;
-xxx.setup = function(CodeMirror) {
+main.defaultKeymap = defaultKeymap;
+main.systemKeymap = systemKeymap;
+main.emmet = emmet;
+main.EmmetEditor = EmmetEditor;
+main.setup = function(CodeMirror) {
 	// setup default Emmet actions
 	emmet.actions.getList().forEach(obj => {
 		let action = obj.name;
@@ -171,6 +171,6 @@ xxx.setup = function(CodeMirror) {
 };
 
 if (typeof CodeMirror !== 'undefined') {
-	xxx.setup(CodeMirror);
+	main.setup(CodeMirror);
 }
 
