@@ -1,5 +1,7 @@
 let EmmetEditor = require('./editor')
-let emmet = require ('./emmet')
+let emmet  = require('emmet');
+require('emmet/bundles/snippets')
+require('emmet/bundles/caniuse')
 
 function noop() {
 	if (CodeMirror.version >= '3.1') {
