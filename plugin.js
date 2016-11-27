@@ -1,3 +1,6 @@
+let EmmetEditor = require('./editor')
+let emmet = require ('./emmet')
+
 function noop() {
 	if (CodeMirror.version >= '3.1') {
 		return CodeMirror.Pass;
@@ -80,8 +83,6 @@ let systemKeymap = function(keymap) {
 /**
  * Emmet plugin for CodeMirror
  */
-let EmmetEditor = require('./editor')
-let emmet = require ('./emmet')
 
 let defaultKeymap = {
 	'Cmd-E': 'emmet.expand_abbreviation',
@@ -125,7 +126,7 @@ let singleSelectionActions = [
  * @param  {CodeMirror} cm
  * @param  {Object} keymap
  */
-let xxx = function(cm, keymap) {
+let main = function(cm, keymap) {
   keymap = keymap || defaultKeymap
 	keymap = systemKeymap(keymap);
 	cm.__emmetKeymap = keymap;
@@ -134,9 +135,9 @@ let xxx = function(cm, keymap) {
 	return cm;
 }
 
-module.exports = xxx
+module.exports = main
 
-xxx.dispose = function(cm) {
+main.dispose = function(cm) {
 	if (cm.__emmetKeymap) {
 		cm.removeKeyMap(cm.__emmetKeymap);
 		delete cm.__emmetKeymap;

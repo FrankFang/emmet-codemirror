@@ -4,9 +4,11 @@
  * should run acttion multiple times and update `selectionIndex`
  * property on each iteration.
  */
-let emmet = require('./emmet');
+let emmet  = require('emmet');
+require('emmet/bundles/snippets')
+require('emmet/bundles/caniuse')
 
-var modeMap = {
+let modeMap = {
 	'text/html': 'html',
 	'application/xml': 'xml',
 	'text/xsl': 'xsl',
@@ -27,10 +29,10 @@ module.exports = class EmmetEditor {
 	 * @return {Array}
 	 */
 	selectionList() {
-		var cm = this.context;
+		let cm = this.context;
 		return cm.listSelections().map(function(sel) {
-			var anchor = posToIndex(cm, sel.anchor);
-			var head = posToIndex(cm, sel.head);
+			let anchor = posToIndex(cm, sel.anchor);
+			let head = posToIndex(cm, sel.head);
 
 			return {
 				start: Math.min(anchor, head),
@@ -60,8 +62,8 @@ module.exports = class EmmetEditor {
 			end = start;
 		}
 
-		var sels = this.selectionList();
-		var cm = this.context;
+		let sels = this.selectionList();
+		let cm = this.context;
 		sels[this.selectionIndex] = {start: start, end: end};
 		this.context.setSelections(sels.map(function(sel) {
 			return {
@@ -76,14 +78,14 @@ module.exports = class EmmetEditor {
 	 * @return {String}
 	 */
 	getSelection() {
-		var sel = this.getSelectionRange();
+		let sel = this.getSelectionRange();
 		sel.start = indexToPos(this.context, sel.start);
 		sel.end = indexToPos(this.context, sel.end);
 		return this.context.getRange(sel.start, sel.end);
 	}
 
 	getCurrentLineRange() {
-		var caret = indexToPos(this.context, this.getCaretPos());
+		let caret = indexToPos(this.context, this.getCaretPos());
 		return {
 			start: posToIndex(this.context, caret.line, 0),
 			end:   posToIndex(this.context, caret.line, this.context.getLine(caret.line).length)
@@ -91,7 +93,7 @@ module.exports = class EmmetEditor {
 	}
 
 	getCurrentLine() {
-		var caret = indexToPos(this.context, this.getCaretPos());
+		let caret = indexToPos(this.context, this.getCaretPos());
 		return this.context.getLine(caret.line) || '';
 	}
 
@@ -112,10 +114,10 @@ module.exports = class EmmetEditor {
 		}
 
 		// find new caret position
-		var tabstopData = emmet.tabStops.extract(value, {escape: ch => ch});
+		let tabstopData = emmet.tabStops.extract(value, {escape: ch => ch});
 		value = tabstopData.text;
 
-		var firstTabStop = tabstopData.tabstops[0] || {start: value.length, end: value.length};
+		let firstTabStop = tabstopData.tabstops[0] || {start: value.length, end: value.length};
 		firstTabStop.start += start;
 		firstTabStop.end += start;
 
@@ -130,8 +132,8 @@ module.exports = class EmmetEditor {
 	 * @return {String}
 	 */
 	normalize(str) {
-		var indent = '\t';
-		var ctx = this.context;
+		let indent = '\t';
+		let ctx = this.context;
 		if (!ctx.getOption('indentWithTabs')) {
 			indent = emmet.utils.common.repeatString(' ', ctx.getOption('indentUnit'));
 		}
@@ -146,10 +148,10 @@ module.exports = class EmmetEditor {
 	}
 
 	getSyntax() {
-		var editor = this.context;
-		var pos = editor.posFromIndex(this.getCaretPos());
-		var mode = editor.getModeAt(editor.getCursor());
-		var syntax = mode.name;
+		let editor = this.context;
+		let pos = editor.posFromIndex(this.getCaretPos());
+		let mode = editor.getModeAt(editor.getCursor());
+		let syntax = mode.name;
 		if (syntax === 'xml' && mode.configuration) {
 			syntax = mode.configuration;
 		}
